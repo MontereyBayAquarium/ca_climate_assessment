@@ -85,7 +85,8 @@ A <- ggplot(timeseries, aes(x = year, y = deviation, color = county)) +
     legend.key = element_rect(fill = alpha('blue', 0)),  # Adjust legend key
     legend.position = "none",
     axis.title.y = element_blank(),
-    axis.title.x = element_blank()
+    axis.title.x = element_blank(),
+    plot.margin = unit(c(1,1,0,0), 'lines')
   )
 
 A
@@ -123,7 +124,8 @@ B <- ggplot(timeseries %>% filter(year > 2013), aes(x = year, y = deviation, col
     legend.title = element_blank(),  # Remove legend title
     legend.key = element_rect(fill = alpha('blue', 0)),  # Adjust legend key
     axis.title.y = element_blank(),
-    axis.title.x = element_blank()
+    axis.title.x = element_blank(),
+    plot.margin = unit(c(0,1,1,0), 'lines')
   )
 
 B
@@ -136,7 +138,7 @@ p
 p_annotated <- ggpubr::annotate_figure(
   p,
   left = grid::textGrob("Standard deviations from \n1984-2013 average", rot = 90, vjust = 0.5, gp = grid::gpar(fontsize = 12)),
-  bottom = grid::textGrob("Year", vjust = 0.5, hjust=-0.5, gp = grid::gpar(fontsize = 12))
+  bottom = grid::textGrob("Year", vjust = 0, hjust=-0.5, gp = grid::gpar(fontsize = 12))
 )
 
 p_annotated
