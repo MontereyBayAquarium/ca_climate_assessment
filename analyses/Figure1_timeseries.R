@@ -59,8 +59,9 @@ A <- ggplot(timeseries, aes(x = year, y = deviation, color = county)) +
   labs(
     title = "",
     x = "Year",
-    y = "Standard deviations from \n1984-2013 average",
-    color = "Area"
+    y = "",
+    color = "Area",
+    tag= "A"
   ) +
   scale_color_brewer(palette = "Dark2", limits = county_order) +  # Apply Dark2 and set order
   scale_x_continuous(
@@ -81,10 +82,65 @@ A <- ggplot(timeseries, aes(x = year, y = deviation, color = county)) +
   theme_bw() + base_theme +
   theme(
     legend.title = element_blank(),  # Remove legend title
-    legend.key = element_rect(fill = alpha('blue', 0))  # Adjust legend key
+    legend.key = element_rect(fill = alpha('blue', 0)),  # Adjust legend key
+    legend.position = "none",
+    axis.title.y = element_blank(),
+    axis.title.x = element_blank()
   )
 
 A
+
+
+B <- ggplot(timeseries %>% filter(year > 2013), aes(x = year, y = deviation, color = county)) +
+  geom_line(linewidth = 0.5) +  # Ensure color is applied to lines
+  geom_point(size=0.8) +  # Ensure color is applied to points
+  geom_hline(yintercept = 0, linetype = "dashed", color = "black", linewidth = 0.5) +  # Horizontal dashed line at 0
+  labs(
+    title = "",
+    x = "Year",
+    y = "",
+    color = "Area",
+    tag = "B"
+  ) +
+  scale_color_brewer(palette = "Dark2", limits = county_order) +  # Apply Dark2 and set order
+  scale_x_continuous(
+    breaks = seq(2014, x_max, by = 2),  # Tick marks every 5 years, starting at 1985
+    expand = c(0, 0)  # Prevent extra space at the edges
+  ) +
+  #add heatwaves
+  # 1982-83 
+ # annotate(geom="rect", xmin=1996.5, xmax=1997.5, ymin=-Inf, ymax=Inf, fill="red", alpha=0.2) +
+  # 1982-83 
+  annotate(geom="rect", xmin=2014, xmax=2016, ymin=-Inf, ymax=Inf, fill="red", alpha=0.2) +
+  #add 1.5 sd region
+  # Add solid horizontal lines at ±1.5 SD
+  geom_hline(yintercept = 1, linetype = "solid", color = "gray20", linewidth = 0.6) +
+  geom_hline(yintercept = -1, linetype = "solid", color = "gray20", linewidth = 0.6) +
+  annotate("rect", xmin = 2014, xmax = x_max, ymin = -1, ymax = 1, 
+           fill = "gray80", alpha = 0.4)+
+  theme_bw() + base_theme +
+  theme(
+    legend.title = element_blank(),  # Remove legend title
+    legend.key = element_rect(fill = alpha('blue', 0)),  # Adjust legend key
+    axis.title.y = element_blank(),
+    axis.title.x = element_blank()
+  )
+
+B
+
+
+p <- ggpubr::ggarrange(A, B, nrow=2)
+p
+
+# Annotate the figure with a shared y-axis label
+p_annotated <- ggpubr::annotate_figure(
+  p,
+  left = grid::textGrob("Standard deviations from \n1984-2013 average", rot = 90, vjust = 0.5, gp = grid::gpar(fontsize = 12)),
+  bottom = grid::textGrob("Year", vjust = 0.5, hjust=-0.5, gp = grid::gpar(fontsize = 12))
+)
+
+p_annotated
+
 
 ggsave(
   filename = "~/Downloads/kelp_timeseries_plot.png",  
@@ -93,4 +149,14 @@ ggsave(
   height = 3,  
   units = "in",
   dpi = 600   
+)
+
+ggsave(
+  filename = "~/Downloads/kelp_timeseries_combined_plot.png",  
+  plot = p_annotated,  
+  width = 5,  
+  height = 4,  
+  units = "in",
+  dpi = 600,
+  bg = "white"
 )
